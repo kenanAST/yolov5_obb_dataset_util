@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+
 def rotate_points(points, center, angle):
     # Convert the angle to radians
     theta = np.radians(angle)
@@ -20,8 +21,10 @@ def rotate_points(points, center, angle):
 
     return rotated_points
 
+
 # Original points
-points = np.array([[100, 100], [200, 100], [200, 200], [100, 200]], dtype=np.float32)
+points = np.array([[100, 100], [200, 100], [200, 200],
+                  [100, 200]], dtype=np.float32)
 
 # Center of rotation (assumed to be the center of the image)
 center = np.array([150, 150], dtype=np.float32)
@@ -30,8 +33,4 @@ center = np.array([150, 150], dtype=np.float32)
 angle = 45
 
 # Rotate the points
-rotated_points = rotate_points(points, center, angle)
-
-# Print the updated points
-for i, point in enumerate(rotated_points):
-    print(f"Point {i+1}: ({point[0]}, {point[1]})")
+rotated_points = rotate_points(points, center, 0 + 5)
