@@ -1,13 +1,13 @@
 import cv2
 import numpy as np
 
-
-# A 5x4 grid division of a (1024, 768) image.
+# A 4x5 grid division of a (1024, 768) image.
 anchor_points = [
-    (102.4, 96), (307.2, 96), (512, 96), (716.8, 96), (921.6, 96),
-    (102.4, 288), (307.2, 288), (512, 288), (716.8, 288), (921.6, 288),
-    (102.4, 480), (307.2, 480), (512, 480), (716.8, 480), (921.6, 480),
-    (102.4, 672), (307.2, 672), (512, 672), (716.8, 672), (921.6, 672)
+    [(128, 77), (384, 77), (640, 77), (896, 77)],
+    [(128, 231), (384, 231), (640, 231), (896, 231)],
+    [(128, 385), (384, 385), (640, 385), (896, 385)],
+    [(128, 539), (384, 539), (640, 539), (896, 539)],
+    [(128, 693), (384, 693), (640, 693), (896, 693)],
 ]
 
 
@@ -44,21 +44,27 @@ angle = 45
 # Rotate the points
 rotated_points = rotate_points(points, center, 45)
 
-# Create a blank image
-image = np.zeros((680, 680, 3), dtype=np.uint8)
+# Read the background image
+background_image = cv2.imread('uav0050.jpg')
 
-# Convert the rotated points to integers
-rotated_points = np.int32(rotated_points)
+# Resize the background image to match the desired dimensions
+background_image = cv2.resize(background_image, (1024, 768))
 
+# Create a blank image with the same dimensions as the background image
+image = np.zeros_like(background_image)
 
-center_point = (340, 340)
-cv2.circle(image, center_point, radius=20, color=(255, 0, 0), thickness=-1)
+# Overlay the background image on the blank image
+image = cv2.addWeighted(image, 1, background_image, 1, 0)
 
-# Connect the points to form a rectangle
-cv2.polylines(image, [rotated_points], isClosed=True,
-              color=(0, 0, 255), thickness=2)
+# Draw circles in the anchor points
+for row in anchor_points:
+    for point in row:
+        x, y = point
+        cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
+        cv2.putText(image, f'({x}, {y})', (x + 10, y - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
 
 # Display the image
-cv2.imshow('Rectangle', image)
+cv2.imshow('Anchor Points', image)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
