@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import math
 
 # A 4x5 grid division of a (1024, 768) image.
 anchor_points = [
@@ -9,6 +10,23 @@ anchor_points = [
     [(128, 539), (384, 539), (640, 539), (896, 539)],
     [(128, 693), (384, 693), (640, 693), (896, 693)],
 ]
+
+
+def rotated_image_center(point, pivot, angle):
+    """
+    Rotate a point around a pivot point by a given angle.
+    """
+    px, py = point
+    cx, cy = pivot
+
+    # Convert the angle to radians
+    angle_rad = math.radians(angle)
+
+    # Compute the coordinates after rotation
+    qx = cx + math.cos(angle_rad) * (px - cx) - math.sin(angle_rad) * (py - cy)
+    qy = cy + math.sin(angle_rad) * (px - cx) + math.cos(angle_rad) * (py - cy)
+
+    return qx, qy
 
 
 def rotate_points(points, center, angle):
@@ -31,40 +49,40 @@ def rotate_points(points, center, angle):
     return rotated_points
 
 
-# Original points
-points = np.array([[100, 100], [200, 100], [200, 200],
-                  [100, 200]], dtype=np.float32)
+# # Original points
+# points = np.array([[100, 100], [200, 100], [200, 200],
+#                   [100, 200]], dtype=np.float32)
 
-# Center of rotation (assumed to be the center of the image)
-center = np.array([340, 340], dtype=np.float32)
+# # Center of rotation (assumed to be the center of the image)
+# center = np.array([340, 340], dtype=np.float32)
 
-# Angle of rotation in degrees
-angle = 45
+# # Angle of rotation in degrees
+# angle = 45
 
-# Rotate the points
-rotated_points = rotate_points(points, center, 45)
+# # Rotate the points
+# rotated_points = rotate_points(points, center, 45)
 
-# Read the background image
-background_image = cv2.imread('uav0050.jpg')
+# # Read the background image
+# background_image = cv2.imread('uav0050.jpg')
 
-# Resize the background image to match the desired dimensions
-background_image = cv2.resize(background_image, (1024, 768))
+# # Resize the background image to match the desired dimensions
+# background_image = cv2.resize(background_image, (1024, 768))
 
-# Create a blank image with the same dimensions as the background image
-image = np.zeros_like(background_image)
+# # Create a blank image with the same dimensions as the background image
+# image = np.zeros_like(background_image)
 
-# Overlay the background image on the blank image
-image = cv2.addWeighted(image, 1, background_image, 1, 0)
+# # Overlay the background image on the blank image
+# image = cv2.addWeighted(image, 1, background_image, 1, 0)
 
-# Draw circles in the anchor points
-for row in anchor_points:
-    for point in row:
-        x, y = point
-        cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
-        cv2.putText(image, f'({x}, {y})', (x + 10, y - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+# # Draw circles in the anchor points
+# for row in anchor_points:
+#     for point in row:
+#         x, y = point
+#         cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
+#         cv2.putText(image, f'({x}, {y})', (x + 10, y - 10),
+#                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
 
-# Display the image
-cv2.imshow('Anchor Points', image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# # Display the image
+# cv2.imshow('Anchor Points', image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()

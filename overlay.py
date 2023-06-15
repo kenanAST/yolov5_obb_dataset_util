@@ -1,5 +1,24 @@
 from PIL import Image, ImageDraw
 import os
+import math
+
+
+def calculate_rotated_center(point, pivot, angle):
+    """
+    Rotate a point around a pivot point by a given angle.
+    """
+    px, py = point
+    cx, cy = pivot
+
+    # Convert the angle to radians
+    angle_rad = math.radians(-angle)  # Change the sign of the angle
+
+    # Compute the coordinates after rotation
+    qx = cx + math.cos(angle_rad) * (px - cx) - math.sin(angle_rad) * (py - cy)
+    qy = cy + math.sin(angle_rad) * (px - cx) + math.cos(angle_rad) * (py - cy)
+
+    print(f"({qx}, {qy})")
+    return qx, qy
 
 
 def overlay_images(folder_path, background_path, output_path, rotations=None, anchor_points=None):
@@ -19,6 +38,8 @@ def overlay_images(folder_path, background_path, output_path, rotations=None, an
     width = max(image.width for image in images)
     height = max(image.height for image in images)
 
+    center = (int(width/2), int(height/2))
+
     # Open the background image
     background = Image.open(background_path)
     background = background.resize((width, height))
@@ -27,9 +48,12 @@ def overlay_images(folder_path, background_path, output_path, rotations=None, an
     merged_image = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     merged_image.paste(background, (0, 0))
 
-    # Overlay each image onto the merged image
-    for image in images:
-        merged_image.paste(image, (0, 0), mask=image)
+    # Overlay each image onto the merged image with rotation and anchor point
+    for image, rotation, anchor in zip(images, rotations, anchor_points):
+        rotated_image = image.rotate(
+            rotation, center=anchor)
+        print(f"NewSize: {rotated_image.size}")
+        merged_image.paste(rotated_image, mask=rotated_image)
 
     # Save the merged image
     merged_image.save(output_path)
@@ -38,16 +62,26 @@ def overlay_images(folder_path, background_path, output_path, rotations=None, an
 
 
 folder_path = "./raw_data/drone_images"
-background_path = "./raw_data/sky_backgrounds/anime2.png"
+background_path = "./raw_data/sky_backgrounds/coordinates.png"
 output_path = "./generated_dataset/1.png"
-rotations = [10, 90, 0, 0, 0]  # Rotation angles for each image in degrees
+# Rotation angles for each image in degrees
+rotations = [90, 180, 45, 270, 360]
+
 anchor_points = [
-    (896, 693),  # Anchor point for the first image
-    (896, 539),  # Anchor point for the second image
-    (896, 539),  # Anchor point for the third image
-    (640, 77),   # Anchor point for the fourth image
-    (896, 77)    # Anchor point for the fifth image
+    (896, 693),
+    (896, 539),
+    (896, 539),
+    (640, 77),
+    (896, 77)
 ]
+
+# anchor_points = [
+#     (896, 693),
+#     (0, 0),
+#     (0, 0),
+#     (0, 0),
+#     (0, 0),
+# ]
 
 overlay_images(folder_path, background_path,
                output_path, rotations, anchor_points)
