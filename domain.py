@@ -49,40 +49,50 @@ def rotate_points(points, center, angle):
     return rotated_points
 
 
-# # Original points
-# points = np.array([[100, 100], [200, 100], [200, 200],
-#                   [100, 200]], dtype=np.float32)
+def scale_points(points, scale):
+    # Create a scaling matrix
+    scaling_matrix = np.array([[scale, 0], [0, scale]])
 
-# # Center of rotation (assumed to be the center of the image)
-# center = np.array([340, 340], dtype=np.float32)
+    # Apply the scaling matrix to the points
+    scaled_points = np.dot(scaling_matrix, points.T).T
 
-# # Angle of rotation in degrees
-# angle = 45
+    return scaled_points
 
-# # Rotate the points
-# rotated_points = rotate_points(points, center, 45)
 
-# # Read the background image
-# background_image = cv2.imread('uav0050.jpg')
+# Original points
+points = np.array([[100, 100], [200, 100], [200, 200],
+                  [100, 200]], dtype=np.float32)
 
-# # Resize the background image to match the desired dimensions
-# background_image = cv2.resize(background_image, (1024, 768))
+# Center of rotation (assumed to be the center of the image)
+center = np.array([340, 340], dtype=np.float32)
 
-# # Create a blank image with the same dimensions as the background image
-# image = np.zeros_like(background_image)
+# Angle of rotation in degrees
+angle = 45
 
-# # Overlay the background image on the blank image
-# image = cv2.addWeighted(image, 1, background_image, 1, 0)
+# Rotate the points
+rotated_points = rotate_points(points, center, 45)
 
-# # Draw circles in the anchor points
-# for row in anchor_points:
-#     for point in row:
-#         x, y = point
-#         cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
-#         cv2.putText(image, f'({x}, {y})', (x + 10, y - 10),
-#                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+# Read the background image
+background_image = cv2.imread('uav0050.jpg')
 
-# # Display the image
-# cv2.imshow('Anchor Points', image)
-# cv2.waitKey(0)
-# cv2.destroyAllWindows()
+# Resize the background image to match the desired dimensions
+background_image = cv2.resize(background_image, (1024, 768))
+
+# Create a blank image with the same dimensions as the background image
+image = np.zeros_like(background_image)
+
+# Overlay the background image on the blank image
+image = cv2.addWeighted(image, 1, background_image, 1, 0)
+
+# Draw circles in the anchor points
+for row in anchor_points:
+    for point in row:
+        x, y = point
+        cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
+        cv2.putText(image, f'({x}, {y})', (x + 10, y - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+
+# Display the image
+cv2.imshow('Anchor Points', image)
+cv2.waitKey(0)
+cv2.destroyAllWindows()

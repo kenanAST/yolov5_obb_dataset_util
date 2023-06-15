@@ -75,13 +75,5 @@ anchor_points = [
     (896, 77)
 ]
 
-# anchor_points = [
-#     (896, 693),
-#     (0, 0),
-#     (0, 0),
-#     (0, 0),
-#     (0, 0),
-# ]
-
 overlay_images(folder_path, background_path,
                output_path, rotations, anchor_points)
