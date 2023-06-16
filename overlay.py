@@ -3,24 +3,6 @@ import os
 import math
 
 
-def calculate_rotated_center(point, pivot, angle):
-    """
-    Rotate a point around a pivot point by a given angle.
-    """
-    px, py = point
-    cx, cy = pivot
-
-    # Convert the angle to radians
-    angle_rad = math.radians(-angle)  # Change the sign of the angle
-
-    # Compute the coordinates after rotation
-    qx = cx + math.cos(angle_rad) * (px - cx) - math.sin(angle_rad) * (py - cy)
-    qy = cy + math.sin(angle_rad) * (px - cx) + math.cos(angle_rad) * (py - cy)
-
-    print(f"({qx}, {qy})")
-    return qx, qy
-
-
 def overlay_images(folder_path, background_path, output_path, rotations=None, anchor_points=None):
     images = []
     for filename in os.listdir(folder_path):

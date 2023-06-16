@@ -2,14 +2,11 @@ import cv2
 import numpy as np
 import math
 
-# A 4x5 grid division of a (1024, 768) image.
-anchor_points = [
-    [(128, 77), (384, 77), (640, 77), (896, 77)],
-    [(128, 231), (384, 231), (640, 231), (896, 231)],
-    [(128, 385), (384, 385), (640, 385), (896, 385)],
-    [(128, 539), (384, 539), (640, 539), (896, 539)],
-    [(128, 693), (384, 693), (640, 693), (896, 693)],
-]
+
+def draw_rectangle(image, points):
+    # Draw a rectangle on the image given the 4 points
+    for i in range(4):
+        cv2.line(image, points[i], points[(i+1) % 4], (0, 0, 255), 2)
 
 
 def rotated_image_center(point, pivot, angle):
@@ -59,40 +56,98 @@ def scale_points(points, scale):
     return scaled_points
 
 
-# Original points
-points = np.array([[100, 100], [200, 100], [200, 200],
-                  [100, 200]], dtype=np.float32)
+def reposition_center(points, new_center):
+    # Calculate the current center of the points
+    current_center = np.mean(points, axis=0)
 
-# Center of rotation (assumed to be the center of the image)
-center = np.array([340, 340], dtype=np.float32)
+    # Calculate the translation vector to move the points to the new center
+    translation_vector = new_center - current_center
 
-# Angle of rotation in degrees
-angle = 45
+    # Translate the points to the new center
+    translated_points = points + translation_vector
 
-# Rotate the points
-rotated_points = rotate_points(points, center, 45)
+    return translated_points
 
-# Read the background image
-background_image = cv2.imread('uav0050.jpg')
 
-# Resize the background image to match the desired dimensions
-background_image = cv2.resize(background_image, (1024, 768))
+def check_rectangle_bounds(rectangle, image_size):
+    """
+    Check if a rectangle is within the bounds of the image.
+    """
+    x_points = [point[0] for point in rectangle]
+    y_points = [point[1] for point in rectangle]
+    min_x = min(x_points)
+    max_x = max(x_points)
+    min_y = min(y_points)
+    max_y = max(y_points)
 
-# Create a blank image with the same dimensions as the background image
-image = np.zeros_like(background_image)
+    image_width, image_height = image_size
 
-# Overlay the background image on the blank image
-image = cv2.addWeighted(image, 1, background_image, 1, 0)
+    if min_x < 0 or min_y < 0 or max_x > image_width or max_y > image_height:
+        return False
 
-# Draw circles in the anchor points
-for row in anchor_points:
-    for point in row:
-        x, y = point
-        cv2.circle(image, (x, y), 5, (0, 0, 255), -1)
-        cv2.putText(image, f'({x}, {y})', (x + 10, y - 10),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 1, cv2.LINE_AA)
+    return True
 
-# Display the image
-cv2.imshow('Anchor Points', image)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+
+def check_rectangle_collision(rectangle, rectangle_array):
+    for other_rectangle in rectangle_array:
+        x1_min = np.min(rectangle[:, 0])
+        y1_min = np.min(rectangle[:, 1])
+        x1_max = np.max(rectangle[:, 0])
+        y1_max = np.max(rectangle[:, 1])
+
+        x2_min = np.min(other_rectangle[:, 0])
+        y2_min = np.min(other_rectangle[:, 1])
+        x2_max = np.max(other_rectangle[:, 0])
+        y2_max = np.max(other_rectangle[:, 1])
+
+        if (x1_max < x2_min or x2_max < x1_min or
+                y1_max < y2_min or y2_max < y1_min):
+            # No collision, check the next rectangle
+            continue
+
+        # Collision detected
+        return True
+
+    # No collision with any rectangle in the array
+    return False
+
+
+# # Original points
+# points = np.array([[100, 100], [200, 100], [200, 200],
+#                   [100, 200]], dtype=np.float32)
+
+# # Center of rotation (assumed to be the center of the image)
+# center = np.array([340, 340], dtype=np.float32)
+
+# # Angle of rotation in degrees
+# angle = 45
+
+# # Rotate the points
+# rotated_points = rotate_points(points, center, angle)
+# reposition_points = reposition_center(
+#     rotated_points, np.array([974, 384], dtype=np.float32))
+
+# print(check_rectangle_bounds(reposition_points, (1024, 768)))
+
+
+# # Read the background image
+# background_image = cv2.imread('uav0050.jpg')
+
+# # Resize the background image to match the desired dimensions
+# background_image = cv2.resize(background_image, (1024, 768))
+
+# # Create a blank image with the same dimensions as the background image
+# image = np.zeros_like(background_image)
+
+# # Overlay the background image on the blank image
+# image = cv2.addWeighted(image, 1, background_image, 1, 0)
+
+
+# # Draw the rotated rectangle
+# draw_rectangle(image, reposition_points.astype(np.int32))
+
+
+# # Display the image
+# cv2.imshow('Anchor Points', image)
+# cv2.waitKey(0)
+# cv2.destroyAllWindows()
