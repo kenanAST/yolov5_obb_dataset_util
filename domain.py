@@ -3,6 +3,14 @@ import numpy as np
 import math
 
 
+def draw_lines(image, base_point, points):
+    """
+    Draw lines between a base point and every point in an array on the image.
+    """
+    for point in points:
+        cv2.line(image, tuple(base_point), tuple(point), (0, 0, 255), 2)
+
+
 def draw_rectangle(image, points):
     # Draw a rectangle on the image given the 4 points
     for i in range(4):
@@ -54,6 +62,15 @@ def scale_points(points, scale):
     scaled_points = np.dot(scaling_matrix, points.T).T
 
     return scaled_points
+
+
+def get_center(points):
+    """
+    Calculate the center point of four given points.
+    """
+    x = sum(point[0] for point in points) / 4
+    y = sum(point[1] for point in points) / 4
+    return int(x), int(y)
 
 
 def reposition_center(points, new_center):
@@ -112,6 +129,13 @@ def check_rectangle_collision(rectangle, rectangle_array):
     return False
 
 
+def draw_anchor_points(image, anchor_points):
+    for i, point in enumerate(anchor_points):
+        cv2.circle(image, tuple(point), 5, (0, 255, 0), -1)
+        cv2.putText(image, f"({point[0]}, {point[1]})", (point[0] + 10, point[1] - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1, cv2.LINE_AA)
+
+
 # # Original points
 # points = np.array([[100, 100], [200, 100], [200, 200],
 #                   [100, 200]], dtype=np.float32)
@@ -130,7 +154,7 @@ def check_rectangle_collision(rectangle, rectangle_array):
 # print(check_rectangle_bounds(reposition_points, (1024, 768)))
 
 
-# # Read the background image
+# Read the background image
 # background_image = cv2.imread('uav0050.jpg')
 
 # # Resize the background image to match the desired dimensions

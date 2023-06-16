@@ -3,11 +3,20 @@ import os
 import math
 
 
-def overlay_images(image_paths, background_path, output_path, rotations=None, anchor_points=None, repositions=None):
+# def overlay_images(image_paths, background_path, output_path, rotations=None, anchor_points=None, repositions=None):
+#     images = []
+#     for image_path in image_paths:
+#         image = Image.open(image_path)
+#         images.append(image)
+
+def overlay_images(folder_path, background_path, output_path, rotations=None, anchor_points=None, repositions=None):
     images = []
-    for image_path in image_paths:
-        image = Image.open(image_path)
-        images.append(image)
+    for filename in os.listdir(folder_path):
+        if filename.endswith(".png") or filename.endswith(".jpg"):
+            print(filename)
+            image_path = os.path.join(folder_path, filename)
+            image = Image.open(image_path)
+            images.append(image)
 
     if not images:
         print("No images found in the folder.")
@@ -40,36 +49,36 @@ def overlay_images(image_paths, background_path, output_path, rotations=None, an
         f"Overlay image with background, rotations, and repositions saved as {output_path}")
 
 
-# folder_path = "./domain_data/drone_images"
-# background_path = "./domain_data/sky_backgrounds/anime2.png"
-# output_path = "./generated_dataset/1.png"
-# # Rotation angles for each image in degrees
-# rotations = [90, 180, 45, 270, 360]
+folder_path = "./domain_data/drone_images"
+background_path = "./domain_data/sky_backgrounds/anime2.png"
+output_path = "./generated_dataset/1.png"
+# Rotation angles for each image in degrees
+rotations = [90, 180, 45, 270, 360]
 
-# anchor_points = [
-#     (896, 693),
-#     (896, 539),
-#     (896, 539),
-#     (640, 77),
-#     (896, 77)
-# ]
+anchor_points = [
+    (896, 693),
+    (896, 539),
+    (896, 539),
+    (640, 77),
+    (896, 77)
+]
+
+repositions = [
+    (-512, -20),
+    (0, 0),
+    (0, 0),
+    (0, 0),
+    (0, 0),
+]
+
 
 # repositions = [
-#     (-20, -20),
-#     (0, 0),
-#     (0, 0),
-#     (0, 0),
-#     (0, 0),
+#     (50, 0),
+#     (-50, 0),
+#     (0, 50),
+#     (0, -50),
+#     (100, 100)
 # ]
 
-
-# # repositions = [
-# #     (50, 0),
-# #     (-50, 0),
-# #     (0, 50),
-# #     (0, -50),
-# #     (100, 100)
-# # ]
-
-# overlay_images(folder_path, background_path, output_path,
-#                rotations, anchor_points, repositions)
+overlay_images(folder_path, background_path, output_path,
+               rotations, anchor_points, repositions)
