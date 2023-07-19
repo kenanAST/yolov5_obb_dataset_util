@@ -4,14 +4,20 @@ import numpy as np
 from domain import draw_lines, draw_anchor_points, draw_rectangle, rotate_points, reposition_center, check_rectangle_bounds, check_rectangle_collision, get_center
 from overlay import overlay_images
 import cv2
+import imgname_generate
 
-number_of_images = 5000
+number_of_images = 10
 
 domain_images_path = './domain_data/images'
 domain_labels_path = './domain_data/labelTxt'
 domain_sky_path = './domain_data/sky_backgrounds'
 
 data_pair = []
+
+if (not os.path.exists('./generated_dataset')):
+    os.makedirs('./generated_dataset/display_labelled')
+    os.makedirs('./generated_dataset/images')
+    os.makedirs('./generated_dataset/labelTxt')
 
 
 image_files = os.listdir(domain_images_path)
@@ -155,3 +161,6 @@ for data in range(number_of_images):
     # Save the image
     save_display_path = f'./generated_dataset/display_labelled/uav{"{:04d}".format(data)}.png'
     cv2.imwrite(save_display_path, image)
+
+imgname_generate.write_sorted_filenames(
+    './generated_dataset/images', './generated_dataset/imgnamefile.txt')

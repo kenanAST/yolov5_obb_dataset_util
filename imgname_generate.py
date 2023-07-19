@@ -13,7 +13,7 @@ def write_sorted_filenames(folder_path, output_file):
 
 # Example usage:
 # Replace with the actual folder path
-folder_path = './drone_dataset_lite/test/images'
-output_file = 'imgnamefile.txt'  # Replace with the desired output file path
+# folder_path = './generated_dataset/images'
+# output_file = 'imgnamefile.txt'  # Replace with the desired output file path
 
-write_sorted_filenames(folder_path, output_file)
+# write_sorted_filenames(folder_path, output_file)
